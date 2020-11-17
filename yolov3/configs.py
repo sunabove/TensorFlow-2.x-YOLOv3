@@ -35,8 +35,13 @@ elif YOLO_TYPE                == "yolov3":
                                [[116, 90], [156, 198], [373, 326]]]
 pass
 
+# os check whether if it is a raspberry pi operation system
 import os 
-is_raspberrypi = ( os.uname()[1] == 'raspberrypi'  )
+uname = os.uname()
+is_raspberrypi = ( 'raspberry' in os.uname() )
+
+print( f"uname = {uname}" )
+print( f"is_raspberrypi = {is_raspberrypi}" )
 
 # Train options
 TRAIN_YOLO_TINY             = is_raspberrypi
