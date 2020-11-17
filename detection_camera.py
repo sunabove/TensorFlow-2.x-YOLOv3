@@ -12,11 +12,13 @@ from http import server
 PAGE="""\
 <html>
 <head>
-<title>Raspberry Pi - Surveillance Camera</title>
+<title>Raspberry Pi - YOLO v3 </title>
 </head>
 <body>
-<center><h1>Raspberry Pi - Surveillance Camera</h1></center>
-<center><img src="stream.mjpg" width="640" height="480"></center>
+<center>
+    <h3>Raspberry Pi - YOLO v3</h3>
+    <img src="stream.mjpg" />
+</center>
 </body>
 </html>
 """
@@ -92,7 +94,7 @@ if __name__=='__main__':
         #camera.rotation = 90
         camera.start_recording(output, format='mjpeg')
         try:
-            address = ('', 8000)
+            address = ('', 80)
             server = StreamingServer(address, StreamingHandler)
             server.serve_forever()
         finally:
