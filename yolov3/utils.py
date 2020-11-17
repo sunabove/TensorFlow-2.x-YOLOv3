@@ -92,13 +92,15 @@ def Load_Yolo_model():
         else:
             yolo = Create_Yolo(input_size=YOLO_INPUT_SIZE, CLASSES=TRAIN_CLASSES)
             yolo.load_weights(f"./checkpoints/{TRAIN_MODEL_NAME}") # use custom weights
-        
+        pass
     elif YOLO_FRAMEWORK == "trt": # TensorRT detection
         saved_model_loaded = tf.saved_model.load(YOLO_CUSTOM_WEIGHTS, tags=[tag_constants.SERVING])
         signature_keys = list(saved_model_loaded.signatures.keys())
         yolo = saved_model_loaded.signatures['serving_default']
+    pass
 
     return yolo
+pass
 
 def image_preprocess(image, target_size, gt_boxes=None):
     ih, iw    = target_size
