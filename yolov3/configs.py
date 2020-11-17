@@ -29,12 +29,17 @@ if YOLO_TYPE                == "yolov4":
     YOLO_ANCHORS            = [[[12,  16], [19,   36], [40,   28]],
                                [[36,  75], [76,   55], [72,  146]],
                                [[142,110], [192, 243], [459, 401]]]
-if YOLO_TYPE                == "yolov3":
+elif YOLO_TYPE                == "yolov3":
     YOLO_ANCHORS            = [[[10,  13], [16,   30], [33,   23]],
                                [[30,  61], [62,   45], [59,  119]],
                                [[116, 90], [156, 198], [373, 326]]]
+pass
+
+import os 
+is_raspberrypi = ( os.uname()[1] == 'raspberrypi'  )
+
 # Train options
-TRAIN_YOLO_TINY             = False
+TRAIN_YOLO_TINY             = is_raspberrypi
 TRAIN_SAVE_BEST_ONLY        = True # saves only best model according validation loss (True recommended)
 TRAIN_SAVE_CHECKPOINT       = False # saves all best validated checkpoints in training process (may require a lot disk space) (False recommended)
 TRAIN_CLASSES               = "mnist/mnist.names"
@@ -44,7 +49,7 @@ TRAIN_CHECKPOINTS_FOLDER    = "checkpoints"
 TRAIN_MODEL_NAME            = f"{YOLO_TYPE}_custom"
 TRAIN_LOAD_IMAGES_TO_RAM    = True # With True faster training, but need more RAM
 TRAIN_BATCH_SIZE            = 4
-TRAIN_INPUT_SIZE            = 416
+TRAIN_INPUT_SIZE            = 416 if not is_raspberrypi else 320
 TRAIN_DATA_AUG              = True
 TRAIN_TRANSFER              = True
 TRAIN_FROM_CHECKPOINT       = False # "checkpoints/yolov3_custom"
@@ -69,3 +74,4 @@ if TRAIN_YOLO_TINY:
     YOLO_ANCHORS            = [[[10,  14], [23,   27], [37,   58]],
                                [[81,  82], [135, 169], [344, 319]],
                                [[0,    0], [0,     0], [0,     0]]]
+pass
