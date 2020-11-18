@@ -36,9 +36,13 @@ elif YOLO_TYPE                == "yolov3":
 pass
 
 # os check whether if it is a raspberry pi operation system
-import os 
-uname = os.uname()
-is_raspberrypi = ( 'raspberry' in os.uname() )
+uname = ""
+try : 
+    import os 
+    uname = os.uname()
+except : pass
+
+is_raspberrypi = ( 'raspberry' in uname )
 
 print( f"uname = {uname}" )
 print( f"is_raspberrypi = {is_raspberrypi}" )
