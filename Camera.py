@@ -14,8 +14,8 @@ class StreamingOutput(object):
     pass
 
     def write(self, buf):
-        # New frame, copy the existing buffer's content and notify all
-        # clients it's available
+        # New frame, copy the existing buffer's content 
+        # and notify all clients it's available
 
         self.buffer.truncate()
         
@@ -89,7 +89,7 @@ class Camera(object):
         y = 20   # text y position
         h = 20   # line height
 
-        txt = f"Hello [{self.frame_cnt}]"
+        txt = f"YOLO Object Detection [{self.frame_cnt}]"
         self.putTextLine( image, txt , x, y )
 
         return image
@@ -149,7 +149,7 @@ if __name__=='__main__':
         return render_template('index_camera_only.html')
     pass
 
-    @app.route('/video_feed')
+    @app.route('/video.mjpeg')
     def video_feed(): 
         return Response(generate_frame(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
     pass 
