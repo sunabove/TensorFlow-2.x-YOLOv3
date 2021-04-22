@@ -42,7 +42,7 @@ try :
     uname = os.uname()
 except : pass
 
-is_raspberrypi = ( 'raspberry' in uname )
+is_raspberrypi = ( 'raspberrypi' in uname )
 
 print( f"uname = {uname}" )
 print( f"is_raspberrypi = {is_raspberrypi}" )
