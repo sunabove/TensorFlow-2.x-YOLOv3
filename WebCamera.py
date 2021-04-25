@@ -1,9 +1,16 @@
 # coding: utf-8
 
-import logging, sys, io, cv2, threading, socketserver, numpy as np 
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+
+import logging, sys, io, time, cv2, threading, socketserver
+import numpy as np, tensorflow as tf
+
 from time import sleep
 from threading import Condition
 from http import server
+
+from yolov3.utils import * 
 
 PAGE="""\
 <html>
@@ -94,15 +101,26 @@ pass
 
 class Camera(object):
 
-    def __init__(self):
+    def __init__(self, debug = 0 ):
+        self.debug = debug
+
         self.output = StreamingOutput()
         # 전체 프레임 카운트 
         self.frame_cnt = 0 
         self.rotation = 0 
         
-        self.video = cv2.VideoCapture(-1)
-        self.video.set(cv2.CAP_PROP_FPS, 24)
-        self.video.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc(*'X264'))
+        video = cv2.VideoCapture(-1)        
+        video.set(cv2.CAP_PROP_FPS, 24)
+        video.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'X264'))
+        self.video = video        
+
+        # load yolo model
+        self.width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.fps = int(video.get(cv2.CAP_PROP_FPS)) 
+        self.times = []
+
+        self.yolo = Load_Yolo_model()
     pass 
     
     def __del__(self):
@@ -131,6 +149,65 @@ class Camera(object):
         self.recording = False 
     pass
 
+    def process_img(self, image) :        
+        if self.rotation :
+            image = cv2.rotate( image, rotateCode = 1)
+        pass
+
+        debug = self.debug
+        Yolo = self.yolo
+        times = self.times        
+        
+        input_size=YOLO_INPUT_SIZE
+        CLASSES=YOLO_COCO_CLASSES
+        score_threshold=0.3
+        iou_threshold=0.45
+        rectangle_colors=''
+
+        original_frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        original_frame = cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB)
+
+        image_data = image_preprocess(np.copy(original_frame), [input_size, input_size])
+        image_data = image_data[np.newaxis, ...].astype(np.float32)
+
+        t1 = time.time()
+        if YOLO_FRAMEWORK == "tf":
+            pred_bbox = Yolo.predict(image_data)
+        elif YOLO_FRAMEWORK == "trt":
+            batched_input = tf.constant(image_data)
+            result = Yolo(batched_input)
+            pred_bbox = []
+            for key, value in result.items():
+                value = value.numpy()
+                pred_bbox.append(value)
+            pass
+        pass
+        
+        t2 = time.time()
+        
+        pred_bbox = [tf.reshape(x, (-1, tf.shape(x)[-1])) for x in pred_bbox]
+        pred_bbox = tf.concat(pred_bbox, axis=0)
+
+        bboxes = postprocess_boxes(pred_bbox, original_frame, input_size, score_threshold)
+        bboxes = nms(bboxes, iou_threshold, method='nms')
+        
+        times.append(t2-t1)
+        times = times[-20:]
+
+        self.times = times 
+        
+        ms = sum(times)/len(times)*1000
+        fps = 1000 / ms
+        
+        debug and print("Time: {:.2f}ms, {:.1f} FPS".format(ms, fps))
+
+        frame = draw_bbox(image, bboxes, CLASSES=CLASSES, rectangle_colors=rectangle_colors)
+
+        self.putTextLine( image, f"{fps:.1f} FPS", 10, 40 )
+        
+        return image
+    pass
+
     def get_image(self):
         success, image = self.video.read()
 
@@ -144,16 +221,14 @@ class Camera(object):
             pass 
         pass
 
-        if self.rotation :
-            image = cv2.rotate( image, rotateCode = 1)
-        pass
-        
+        image = self.process_img(image)
+
         x = 10   # text x position
         y = 20   # text y position
         h = 20   # line height
 
         txt = f"YOLO Object Detection [{self.frame_cnt}]"
-        self.putTextLine( image, txt , x, y )
+        self.putTextLine( image, txt, x, y )
 
         return image
     pass
@@ -161,9 +236,9 @@ class Camera(object):
     def get_frame( self ) : 
         # get video frame
 
-        img = self.get_image()
-         
-        _, jpg = cv2.imencode('.jpg', img) 
+        image = self.get_image()
+
+        _, jpg = cv2.imencode('.jpg', image) 
         
         return jpg.tobytes()
     pass
@@ -183,6 +258,7 @@ class Camera(object):
 pass
 
 if __name__=='__main__':
+    print( "Hello ..." )
 
     camera = Camera()
 

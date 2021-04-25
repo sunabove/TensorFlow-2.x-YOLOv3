@@ -44,8 +44,9 @@ except : pass
 
 is_raspberrypi = ( 'raspberrypi' in uname )
 
-print( f"uname = {uname}" )
-print( f"is_raspberrypi = {is_raspberrypi}" )
+debug = 0 
+debug and print( f"uname = {uname}" )
+debug and print( f"is_raspberrypi = {is_raspberrypi}" )
 
 # Train options
 TRAIN_YOLO_TINY             = is_raspberrypi

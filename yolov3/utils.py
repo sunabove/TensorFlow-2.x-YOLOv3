@@ -8,13 +8,9 @@
 #   Description : additional yolov3 and yolov4 functions
 #
 #================================================================
+import cv2, time, random, colorsys, numpy as np, tensorflow as tf
+
 from multiprocessing import Process, Queue, Pipe
-import cv2
-import time
-import random
-import colorsys
-import numpy as np
-import tensorflow as tf
 from yolov3.configs import *
 from yolov3.yolov4 import *
 from tensorflow.python.saved_model import tag_constants
@@ -124,7 +120,8 @@ def image_preprocess(image, target_size, gt_boxes=None):
         gt_boxes[:, [0, 2]] = gt_boxes[:, [0, 2]] * scale + dw
         gt_boxes[:, [1, 3]] = gt_boxes[:, [1, 3]] * scale + dh
         return image_paded, gt_boxes
-
+    pass
+pass # -- image_process
 
 def draw_bbox(image, bboxes, CLASSES=YOLO_COCO_CLASSES, show_label=True, show_confidence = True, Text_colors=(255,255,0), rectangle_colors='', tracking=False):   
     NUM_CLASS = read_class_names(CLASSES)
@@ -339,7 +336,9 @@ def Predict_bbox_mp(Frames_data, Predicted_data, Processing_times):
             pred_bbox = tf.concat(pred_bbox, axis=0)
             
             Predicted_data.put(pred_bbox)
-
+        pass
+    pass
+pass # -- Predict_bbox_mp
 
 def postprocess_mp(Predicted_data, original_frames, Processed_frames, Processing_times, input_size, CLASSES, score_threshold, iou_threshold, rectangle_colors, realtime):
     times = []
@@ -564,13 +563,14 @@ pass # -- detect_realtime
 
 # detect from webcam
 def detect_realtime_http(Yolo, input_size=416, show=False, CLASSES=YOLO_COCO_CLASSES, score_threshold=0.3, iou_threshold=0.45, rectangle_colors=''):
-    times = []
     vid = cv2.VideoCapture(0)
 
     # by default VideoCapture returns float instead of int
     width = int(vid.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = int(vid.get(cv2.CAP_PROP_FPS)) 
+
+    times = []
 
     while 1 :
         _, frame = vid.read()
@@ -580,6 +580,8 @@ def detect_realtime_http(Yolo, input_size=416, show=False, CLASSES=YOLO_COCO_CLA
             original_frame = cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB)
         except:
             break
+        pass
+
         image_data = image_preprocess(np.copy(original_frame), [input_size, input_size])
         image_data = image_data[np.newaxis, ...].astype(np.float32)
 
@@ -593,6 +595,8 @@ def detect_realtime_http(Yolo, input_size=416, show=False, CLASSES=YOLO_COCO_CLA
             for key, value in result.items():
                 value = value.numpy()
                 pred_bbox.append(value)
+            pass
+        pass
         
         t2 = time.time()
         
