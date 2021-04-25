@@ -12,7 +12,6 @@ PAGE="""\
 </head>
 <body>
 <center>
-    <h3>Raspberry Pi - YOLO v3</h3>
     <img src="stream.mjpg" />
 </center>
 </body>
@@ -153,7 +152,7 @@ class Camera(object):
         y = 20   # text y position
         h = 20   # line height
 
-        txt = f"Hello [{self.frame_cnt}]"
+        txt = f"YOLO Object Detection [{self.frame_cnt}]"
         self.putTextLine( image, txt , x, y )
 
         return image
