@@ -149,7 +149,9 @@ class Camera(object):
         self.recording = False 
     pass
 
-    def process_img(self, image) :        
+    def process_img(self, image) :
+        t1 = time.time()
+        
         if self.rotation :
             image = cv2.rotate( image, rotateCode = 1)
         pass
@@ -164,15 +166,12 @@ class Camera(object):
         iou_threshold=0.45
         rectangle_colors=''
 
-        #input_size = 160
-
         original_frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        original_frame = cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB)
+        #original_frame = cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB)
 
         image_data = image_preprocess(np.copy(original_frame), [input_size, input_size])
         image_data = image_data[np.newaxis, ...].astype(np.float32)
 
-        t1 = time.time()
         if YOLO_FRAMEWORK == "tf":
             pred_bbox = Yolo.predict(image_data)
         elif YOLO_FRAMEWORK == "trt":
