@@ -310,6 +310,7 @@ def detect_image(Yolo, image_path, output_path, input_size=416, show=False, CLAS
         cv2.destroyAllWindows()
         
     return image
+pass # -- detect_image
 
 def Predict_bbox_mp(Frames_data, Predicted_data, Processing_times):
     gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -549,8 +550,7 @@ def detect_realtime(Yolo, output_path, input_size=416, show=False, CLASSES=YOLO_
 
         frame = draw_bbox(original_frame, bboxes, CLASSES=CLASSES, rectangle_colors=rectangle_colors)
         # CreateXMLfile("XML_Detections", str(int(time.time())), original_frame, bboxes, read_class_names(CLASSES))
-        image = cv2.putText(frame, "Time: {:.1f}FPS".format(fps), (0, 30),
-                          cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 255), 2)
+        image = cv2.putText(frame, "Time: {:.1f}FPS".format(fps), (0, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 255), 2)
 
         if output_path != '': out.write(frame)
         if show:
@@ -560,3 +560,4 @@ def detect_realtime(Yolo, output_path, input_size=416, show=False, CLASSES=YOLO_
                 break
 
     cv2.destroyAllWindows()
+pass # -- detect_realtime

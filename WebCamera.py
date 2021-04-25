@@ -1,11 +1,6 @@
 # coding: utf-8
 
-import logging
-import io
-import cv2
-import numpy as np 
-import threading
-import socketserver
+import logging, sys, io, cv2, threading, socketserver, numpy as np 
 from time import sleep
 from threading import Condition
 from http import server
@@ -25,6 +20,7 @@ PAGE="""\
 """
 
 class StreamingOutput(object):
+
     def __init__(self):
         self.frame = None
         self.buffer = io.BytesIO()
@@ -32,9 +28,6 @@ class StreamingOutput(object):
     pass
 
     def write(self, buf):
-        # New frame, copy the existing buffer's content and notify all
-        # clients it's available
-
         self.buffer.truncate()
         
         with self.condition:
@@ -75,6 +68,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                     with output.condition:
                         output.condition.wait()
                         frame = output.frame
+                    pass
+
                     self.wfile.write(b'--FRAME\r\n')
                     self.send_header('Content-Type', 'image/jpeg')
                     self.send_header('Content-Length', len(frame))
@@ -104,6 +99,7 @@ class Camera(object):
         self.output = StreamingOutput()
         # 전체 프레임 카운트 
         self.frame_cnt = 0 
+        self.rotation = 0 
         
         self.video = cv2.VideoCapture(-1)
         self.video.set(cv2.CAP_PROP_FPS, 24)
@@ -145,8 +141,12 @@ class Camera(object):
             h = 480
             w= 640
             # black blank image
-            img = np.zeros(shape=[h, w, 3], dtype=np.uint8)
+            image = np.zeros(shape=[h, w, 3], dtype=np.uint8)
             pass 
+        pass
+
+        if self.rotation :
+            image = cv2.rotate( image, rotateCode = 1)
         pass
         
         x = 10   # text x position
@@ -186,8 +186,13 @@ pass
 if __name__=='__main__':
 
     camera = Camera()
-    #Uncomment the next line to change your Pi's Camera rotation (in degrees)
-    #camera.rotation = 90
+
+    if "-vf" in sys.argv : 
+        #camera rotation (in degrees)
+        camera.rotation = 90
+        print( f"Camera roatation = {camera.rotation}" )
+    pass
+
     camera.start_recording()
     try:
         address = ('', 80)
