@@ -166,10 +166,15 @@ class Camera(object):
         iou_threshold=0.45
         rectangle_colors=''
 
-        original_frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        #original_frame = cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB)
+        original_frame = image
 
-        image_data = image_preprocess(np.copy(original_frame), [input_size, input_size])
+        image_data = original_frame
+
+        preprocess = 1
+        if preprocess :
+            image_data = image_preprocess(np.copy(image_data), [input_size, input_size]) 
+        pass
+        
         image_data = image_data[np.newaxis, ...].astype(np.float32)
 
         if YOLO_FRAMEWORK == "tf":

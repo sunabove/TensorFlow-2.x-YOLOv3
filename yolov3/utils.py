@@ -115,7 +115,6 @@ def image_preprocess(image, target_size, gt_boxes=None):
 
     if gt_boxes is None:
         return image_paded
-
     else:
         gt_boxes[:, [0, 2]] = gt_boxes[:, [0, 2]] * scale + dw
         gt_boxes[:, [1, 3]] = gt_boxes[:, [1, 3]] * scale + dh
