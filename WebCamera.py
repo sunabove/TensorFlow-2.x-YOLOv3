@@ -164,6 +164,8 @@ class Camera(object):
         iou_threshold=0.45
         rectangle_colors=''
 
+        #input_size = 160
+
         original_frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         original_frame = cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB)
 
