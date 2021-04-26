@@ -110,16 +110,20 @@ class Camera(object):
         self.rotation = 0 
         
         video = cv2.VideoCapture(-1)        
-        video.set(cv2.CAP_PROP_FPS, 24)
+        video.set(cv2.CAP_PROP_FPS, 2) 
         video.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'X264'))
+        video.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        video.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         self.video = video        
 
         # load yolo model
         self.width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.fps = int(video.get(cv2.CAP_PROP_FPS)) 
-        self.times = []
 
+        print( f"width = {self.width}, height = {self.height}, fps = {self.fps}" )
+
+        self.times = []
         self.yolo = Load_Yolo_model()
     pass 
     
@@ -237,16 +241,6 @@ class Camera(object):
         self.putTextLine( image, txt, x, y )
 
         return image
-    pass
-
-    def get_frame( self ) : 
-        # get video frame
-
-        image = self.get_image()
-
-        _, jpg = cv2.imencode('.jpg', image) 
-        
-        return jpg.tobytes()
     pass
 
     def putTextLine(self, image, txt, x, y ) :
