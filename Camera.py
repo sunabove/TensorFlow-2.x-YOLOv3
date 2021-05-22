@@ -146,6 +146,8 @@ class Camera(object):
             _, jpg = cv2.imencode('.jpg', image ) 
             self.output.write( jpg )
             #print( "Done." )
+
+            sleep( 0.1 )
         pass
     pass
 
