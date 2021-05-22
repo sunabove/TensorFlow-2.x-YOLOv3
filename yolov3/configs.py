@@ -35,6 +35,50 @@ elif YOLO_TYPE                == "yolov3":
                                [[116, 90], [156, 198], [373, 326]]]
 pass
 
+def check_raspberry_pi(raise_on_errors=False):
+    """Checks if Raspberry PI.
+
+    :return:
+    """
+    try:
+        import io
+        with io.open('/proc/cpuinfo', 'r') as cpuinfo:
+            found = False
+            for line in cpuinfo:
+                if line.startswith('Hardware'):
+                    found = True
+                    label, value = line.strip().split(':', 1)
+                    value = value.strip()
+                    if value not in (
+                        'BCM2708',
+                        'BCM2709',
+                        'BCM2711',
+                        'BCM2835',
+                        'BCM2836'
+                    ):
+                        if raise_on_errors:
+                            raise ValueError(
+                                'This system does not appear to be a '
+                                'Raspberry Pi.'
+                            )
+                        else:
+                            return False
+            if not found:
+                if raise_on_errors:
+                    raise ValueError(
+                        'Unable to determine if this system is a Raspberry Pi.'
+                    )
+                else:
+                    return False
+    except IOError:
+        if raise_on_errors:
+            raise ValueError('Unable to open `/proc/cpuinfo`.')
+        else:
+            return False
+
+    return True
+pass # -- check_raspberry_pi
+
 # os check whether if it is a raspberry pi operation system
 uname = ""
 try : 
@@ -42,9 +86,9 @@ try :
     uname = os.uname()
 except : pass
 
-is_raspberrypi = ( 'raspberrypi' in uname )
+is_raspberrypi = check_raspberry_pi()
 
-debug = 0 
+debug = 1 
 debug and print( f"uname = {uname}" )
 debug and print( f"is_raspberrypi = {is_raspberrypi}" )
 
